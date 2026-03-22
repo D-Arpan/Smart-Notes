@@ -9,8 +9,8 @@ const asyncHandler = require("../utils/asyncHandler");
 
 
 const getNotesHandler = asyncHandler(async (req, res) => {
-    const notes = await getNotes()
-    return res.status(200).json({
+    const notes = await getNotes(req.user.id)
+    res.status(200).json({
         success: true,
         data: notes
     })
@@ -18,7 +18,7 @@ const getNotesHandler = asyncHandler(async (req, res) => {
 
 const getSingleNoteHandler = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const note = await getNoteById(id);
+    const note = await getNoteById(id, req.user.id);
     if (!note) {
         return res.status(404).json({
             success: false,
@@ -33,15 +33,13 @@ const getSingleNoteHandler = asyncHandler(async (req, res) => {
 
 const createNoteHandler = asyncHandler(async (req, res) => {
     const { title, description } = req.body
-    if (!title || !description) {
-        return res.status(400).json({
-            message: "Note and Description are required"
-        })
-    }
-    const note = await createNote({ title, description })
-    return res.status(200).json({
+    const note = await createNote({
+        title,
+        description,
+        user: req.user.id
+    })
+    res.status(201).json({
         success: true,
-        message: "A note has been created successfully",
         data: note
     })
 })
@@ -54,7 +52,7 @@ const deleteNoteHandler = asyncHandler(async (req, res) => {
             message: "Note id is required"
         })
     }
-    const deleted = await deleteNote(id)
+    const deleted = await deleteNote(id, req.user.id)
     if (!deleted) {
         return res.status(404).json({
             success: false,
@@ -82,7 +80,7 @@ const updateNoteHandler = asyncHandler(async (req, res) => {
             message: "Note should have a title to be able to update"
         })
     }
-    const updatedNote = await updateNote(id, { title, description })
+    const updatedNote = await updateNote(id, { title, description }, req.user.id)
     if (!updatedNote) {
         return res.status(404).json({
             success: false,

@@ -2,9 +2,9 @@
 
 import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
+import { CreateNoteModal } from "@/components/notes/create-note-modal";
 import { DeleteNoteModal } from "@/components/notes/delete-note-modal";
 import { EditNoteModal } from "@/components/notes/edit-note-modal";
-import { NoteFormCard } from "@/components/notes/note-form-card";
 import { NotesGrid } from "@/components/notes/notes-grid";
 import { ReadNoteModal } from "@/components/notes/read-note-modal";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { SearchInput } from "@/components/ui/search-input";
 import { ToastStack } from "@/components/ui/toast-stack";
 import { createNote, getNotes, removeNote, updateNote } from "@/lib/api";
-import { getErrorMessage } from "@/lib/utils";
+import { getErrorMessage, isAuthErrorMessage } from "@/lib/utils";
 import type { Note, NoteFormValues, ToastMessage, ToastTone } from "@/types/note";
 
 const EMPTY_FORM: NoteFormValues = {
@@ -21,50 +21,98 @@ const EMPTY_FORM: NoteFormValues = {
   description: ""
 };
 
+interface NotesWorkspaceSectionProps {
+  token: string;
+  userEmail: string;
+  onSessionInvalid: () => void;
+}
+
+function getNoteSortValue(note: Note) {
+  if (note.updatedAt) {
+    const updated = Date.parse(note.updatedAt);
+
+    if (!Number.isNaN(updated)) {
+      return updated;
+    }
+  }
+
+  if (note.createdAt) {
+    const created = Date.parse(note.createdAt);
+
+    if (!Number.isNaN(created)) {
+      return created;
+    }
+  }
+
+  if (/^[a-fA-F0-9]{24}$/.test(note._id)) {
+    return parseInt(note._id.slice(0, 8), 16) * 1000;
+  }
+
+  return 0;
+}
+
 async function syncNotes(
   setLoading: Dispatch<SetStateAction<boolean>>,
   setFetchError: Dispatch<SetStateAction<string | null>>,
-  setNotes: Dispatch<SetStateAction<Note[]>>
+  setNotes: Dispatch<SetStateAction<Note[]>>,
+  token: string,
+  onSessionInvalid: () => void
 ) {
   setLoading(true);
   setFetchError(null);
 
   try {
-    const nextNotes = await getNotes();
+    const nextNotes = await getNotes(token);
     setNotes(nextNotes);
   } catch (error) {
-    setFetchError(getErrorMessage(error));
+    const message = getErrorMessage(error);
+    setFetchError(message);
+
+    if (isAuthErrorMessage(message)) {
+      onSessionInvalid();
+    }
   } finally {
     setLoading(false);
   }
 }
 
-export function NotesWorkspaceSection() {
+export function NotesWorkspaceSection({
+  token,
+  userEmail,
+  onSessionInvalid
+}: NotesWorkspaceSectionProps) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [createValues, setCreateValues] = useState<NoteFormValues>(EMPTY_FORM);
   const [editValues, setEditValues] = useState<NoteFormValues>(EMPTY_FORM);
   const [viewingNote, setViewingNote] = useState<Note | null>(null);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [deletingNote, setDeletingNote] = useState<Note | null>(null);
+  const [creatingOpen, setCreatingOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState<"latest" | "oldest">("latest");
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
+  const sortedNotes = [...notes].sort((left, right) => {
+    const difference = getNoteSortValue(right) - getNoteSortValue(left);
+    return sortOrder === "latest" ? difference : -difference;
+  });
   const trimmedQuery = searchQuery.trim().toLowerCase();
+  const trimmedSearchValue = searchQuery.trim();
   const filteredNotes = trimmedQuery
-    ? notes.filter((note) => {
+    ? sortedNotes.filter((note) => {
         const combinedText = `${note.title} ${note.description}`.toLowerCase();
         return combinedText.includes(trimmedQuery);
       })
-    : notes;
+    : sortedNotes;
 
   useEffect(() => {
-    void syncNotes(setLoading, setFetchError, setNotes);
-  }, []);
+    void syncNotes(setLoading, setFetchError, setNotes, token, onSessionInvalid);
+  }, [token, onSessionInvalid]);
 
   function updateCreateField(field: keyof NoteFormValues, value: string) {
     setCreateValues((current) => ({ ...current, [field]: value }));
@@ -99,7 +147,7 @@ export function NotesWorkspaceSection() {
   }
 
   function loadNotes() {
-    return syncNotes(setLoading, setFetchError, setNotes);
+    return syncNotes(setLoading, setFetchError, setNotes, token, onSessionInvalid);
   }
 
   function validate(values: NoteFormValues) {
@@ -126,13 +174,19 @@ export function NotesWorkspaceSection() {
       const createdNote = await createNote({
         title: createValues.title.trim(),
         description: createValues.description.trim()
-      });
+      }, token);
 
       setNotes((current) => [createdNote, ...current]);
       setCreateValues(EMPTY_FORM);
+      setCreatingOpen(false);
       showToast("success", "Note created", "Your new note has been saved.");
     } catch (error) {
-      showToast("error", "Could not create note", getErrorMessage(error));
+      const message = getErrorMessage(error);
+      showToast("error", "Could not create note", message);
+
+      if (isAuthErrorMessage(message)) {
+        onSessionInvalid();
+      }
     } finally {
       setCreating(false);
     }
@@ -163,7 +217,7 @@ export function NotesWorkspaceSection() {
       const updatedNote = await updateNote(editingNote._id, {
         title: editValues.title.trim(),
         description: editValues.description.trim()
-      });
+      }, token);
 
       setNotes((current) =>
         current.map((note) => (note._id === updatedNote._id ? updatedNote : note))
@@ -172,7 +226,12 @@ export function NotesWorkspaceSection() {
       setEditValues(EMPTY_FORM);
       showToast("success", "Note updated", "Your changes are live.");
     } catch (error) {
-      showToast("error", "Could not update note", getErrorMessage(error));
+      const message = getErrorMessage(error);
+      showToast("error", "Could not update note", message);
+
+      if (isAuthErrorMessage(message)) {
+        onSessionInvalid();
+      }
     } finally {
       setSavingEdit(false);
     }
@@ -186,12 +245,17 @@ export function NotesWorkspaceSection() {
     setDeleting(true);
 
     try {
-      await removeNote(deletingNote._id);
+      await removeNote(deletingNote._id, token);
       setNotes((current) => current.filter((note) => note._id !== deletingNote._id));
       setDeletingNote(null);
       showToast("success", "Note deleted", "The note has been removed.");
     } catch (error) {
-      showToast("error", "Could not delete note", getErrorMessage(error));
+      const message = getErrorMessage(error);
+      showToast("error", "Could not delete note", message);
+
+      if (isAuthErrorMessage(message)) {
+        onSessionInvalid();
+      }
     } finally {
       setDeleting(false);
     }
@@ -200,23 +264,15 @@ export function NotesWorkspaceSection() {
   return (
     <>
       <section className="workspace-section">
-        <div className="workspace-sidebar">
-          <NoteFormCard
-            busy={creating}
-            onChange={updateCreateField}
-            onSubmit={handleCreate}
-            values={createValues}
-          />
-        </div>
-
         <div className="workspace-main">
-          <Card>
-            <div className="workspace-header">
-              <div>
-                <h2 className="workspace-title">Your note collection</h2>
+          <Card className="workspace-shell">
+            <div className="workspace-shell__header">
+              <div className="workspace-shell__copy">
+                <span className="workspace-eyebrow">Dashboard</span>
+                <h2 className="workspace-title">Your Smart Notes dashboard</h2>
                 <p className="workspace-subtitle">
-                  Review, edit, and manage the notes already stored by the existing
-                  backend API.
+                  A calm overview of your personal notes space. Your newest notes stay at
+                  the top so recent work is always easier to reach.
                 </p>
               </div>
 
@@ -225,27 +281,84 @@ export function NotesWorkspaceSection() {
                   <span className="status-pill__dot" aria-hidden="true" />
                   {loading
                     ? "Loading notes..."
-                    : trimmedQuery
-                      ? `${filteredNotes.length} of ${notes.length} note${notes.length === 1 ? "" : "s"}`
-                      : `${notes.length} note${notes.length === 1 ? "" : "s"}`}
+                    : `${notes.length} note${notes.length === 1 ? "" : "s"} in your account`}
                 </div>
-                <Button onClick={() => void loadNotes()} type="button" variant="ghost">
-                  Refresh
-                </Button>
+
+                <div className="sort-toggle" aria-label="Sort notes" role="group">
+                  <button
+                    className={`sort-toggle__button ${sortOrder === "latest" ? "is-active" : ""}`}
+                    onClick={() => setSortOrder("latest")}
+                    type="button"
+                  >
+                    Latest first
+                  </button>
+                  <button
+                    className={`sort-toggle__button ${sortOrder === "oldest" ? "is-active" : ""}`}
+                    onClick={() => setSortOrder("oldest")}
+                    type="button"
+                  >
+                    Oldest first
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div className="workspace-toolbar">
+            <div className="workspace-overview">
+              <div className="workspace-stat">
+                <span className="workspace-stat__label">Total notes</span>
+                <strong className="workspace-stat__value">{notes.length}</strong>
+                <p className="workspace-stat__meta">Everything saved to your account</p>
+              </div>
+
+              <div className="workspace-stat">
+                <span className="workspace-stat__label">Showing now</span>
+                <strong className="workspace-stat__value">{filteredNotes.length}</strong>
+                <p className="workspace-stat__meta">
+                  {trimmedQuery
+                    ? "Results after filtering your notes"
+                    : sortOrder === "latest"
+                      ? "Latest notes first"
+                      : "Oldest notes first"}
+                </p>
+              </div>
+
+              <div className="workspace-stat workspace-stat--accent">
+                <span className="workspace-stat__label">Workspace owner</span>
+                <strong className="workspace-stat__value">Private</strong>
+                <p className="workspace-stat__meta">{userEmail}</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="workspace-controls">
+            <div className="workspace-controls__copy">
+              <span className="workspace-eyebrow">Notes tools</span>
+              <h3 className="workspace-controls__title">Find or create a note</h3>
+              <p className="workspace-controls__subtitle">
+                Search through your saved notes or open the full-size editor for a new one.
+              </p>
+            </div>
+
+            <div className="workspace-toolbar workspace-toolbar--controls">
               <SearchInput
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Search by title or note content"
                 value={searchQuery}
               />
-              {trimmedQuery ? (
-                <Button onClick={() => setSearchQuery("")} type="button" variant="ghost">
-                  Clear
+
+              <div className="workspace-actions__buttons">
+                <Button onClick={() => setCreatingOpen(true)} type="button">
+                  Create new note
                 </Button>
-              ) : null}
+                {trimmedQuery ? (
+                  <Button onClick={() => setSearchQuery("")} type="button" variant="ghost">
+                    Clear search
+                  </Button>
+                ) : null}
+                <Button onClick={() => void loadNotes()} type="button" variant="ghost">
+                  Refresh notes
+                </Button>
+              </div>
             </div>
           </Card>
 
@@ -261,9 +374,9 @@ export function NotesWorkspaceSection() {
 
           {!loading && !fetchError && notes.length === 0 ? (
             <EmptyState
-              actionLabel="Reload notes"
-              copy="No notes are available yet. Create one from the composer card to get started."
-              onAction={() => void loadNotes()}
+              actionLabel="Create your first note"
+              copy="You do not have any notes yet. Open the full-size editor and start writing."
+              onAction={() => setCreatingOpen(true)}
               title="Nothing here yet"
             />
           ) : null}
@@ -285,15 +398,39 @@ export function NotesWorkspaceSection() {
           ) : null}
 
           {filteredNotes.length > 0 ? (
-            <NotesGrid
-              notes={filteredNotes}
-              onDelete={openDeleteModal}
-              onEdit={openEditModal}
-              onView={setViewingNote}
-            />
+            <div className="workspace-collection">
+              <div className="workspace-collection__header">
+                <div>
+                  <h3 className="workspace-collection__title">
+                    {trimmedQuery ? "Search results" : "Saved notes"}
+                  </h3>
+                  <p className="workspace-collection__copy">
+                    {trimmedQuery
+                      ? `Showing notes that match "${trimmedSearchValue}".`
+                      : "Browse your notes below."}
+                  </p>
+                </div>
+              </div>
+
+              <NotesGrid
+                notes={filteredNotes}
+                onDelete={openDeleteModal}
+                onEdit={openEditModal}
+                onView={setViewingNote}
+              />
+            </div>
           ) : null}
         </div>
       </section>
+
+      <CreateNoteModal
+        busy={creating}
+        onChange={updateCreateField}
+        onClose={() => setCreatingOpen(false)}
+        onSubmit={() => void handleCreate()}
+        open={creatingOpen}
+        values={createValues}
+      />
 
       <ReadNoteModal
         note={viewingNote}

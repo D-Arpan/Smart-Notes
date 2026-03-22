@@ -9,3 +9,14 @@ export function getErrorMessage(error: unknown) {
 
   return "Something went wrong. Please try again.";
 }
+
+export function isAuthErrorMessage(message: string) {
+  const normalized = message.toLowerCase();
+
+  return (
+    normalized.includes("unauthorized") ||
+    normalized.includes("expired token") ||
+    normalized.includes("invalid or expired token") ||
+    normalized.includes("does not include a token")
+  );
+}

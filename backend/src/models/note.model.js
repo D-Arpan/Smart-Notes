@@ -10,12 +10,16 @@ const noteSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-    },
-    {
-        timestamps: true
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user",
+            required: true
+        }
     }
 )
 
 const noteModel = mongoose.model("note", noteSchema)
 
 module.exports = noteModel
+
+module.exports = noteModelorts = noteModel

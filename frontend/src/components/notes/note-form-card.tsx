@@ -19,10 +19,12 @@ export function NoteFormCard({
 }: NoteFormCardProps) {
   return (
     <Card className="composer-card">
-      <div>
+      <div className="composer-card__header">
+        <span className="workspace-eyebrow">Create</span>
         <h2 className="workspace-title">New note</h2>
         <p className="helper-text">
-          Capture an idea quickly, then refine it later with the edit modal.
+          Save ideas, reminders, or longer thoughts here. You can always edit the full
+          content later.
         </p>
       </div>
 

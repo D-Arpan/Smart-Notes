@@ -1,4 +1,5 @@
 const express = require("express")
+const authMiddleware = require("../middlewares/auth.middleware")
 const { getNotesHandler,
     createNoteHandler,
     deleteNoteHandler,
@@ -7,6 +8,8 @@ const { getNotesHandler,
 
 
 const router = express.Router()
+
+router.use(authMiddleware)
 
 router.get("/", getNotesHandler)
 router.post("/", createNoteHandler)

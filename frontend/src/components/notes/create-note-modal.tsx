@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Textarea } from "@/components/ui/textarea";
-import type { Note, NoteFormValues } from "@/types/note";
+import type { NoteFormValues } from "@/types/note";
 
-interface EditNoteModalProps {
-  note: Note | null;
+interface CreateNoteModalProps {
+  open: boolean;
   values: NoteFormValues;
   busy: boolean;
   onChange: (field: keyof NoteFormValues, value: string) => void;
@@ -13,36 +13,36 @@ interface EditNoteModalProps {
   onSubmit: () => void;
 }
 
-export function EditNoteModal({
-  note,
+export function CreateNoteModal({
+  open,
   values,
   busy,
   onChange,
   onClose,
   onSubmit
-}: EditNoteModalProps) {
+}: CreateNoteModalProps) {
   return (
     <Modal
       className="ui-modal--editor"
-      description="Make changes inside the popup card and save them back to the existing backend."
+      description="Use the full-size editor to write a title and a longer note without feeling cramped."
       onClose={onClose}
-      open={Boolean(note)}
-      title={note ? `Edit "${note.title}"` : "Edit note"}
+      open={open}
+      title="Create new note"
     >
-      <div className="composer-card composer-card--modal">
+      <div className="composer-card composer-card--modal composer-card--plain">
         <Input
-          id="edit-note-title"
+          id="create-note-title"
           label="Title"
           onChange={(event) => onChange("title", event.target.value)}
-          placeholder="Update the note title"
+          placeholder="Daily plan, idea, reminder..."
           value={values.title}
         />
 
         <Textarea
-          id="edit-note-description"
+          id="create-note-description"
           label="Description"
           onChange={(event) => onChange("description", event.target.value)}
-          placeholder="Update the note description"
+          placeholder="Write the note details here."
           value={values.description}
         />
 
@@ -51,7 +51,7 @@ export function EditNoteModal({
             Cancel
           </Button>
           <Button loading={busy} onClick={onSubmit} type="button">
-            {busy ? "Saving changes" : "Save changes"}
+            {busy ? "Saving note" : "Create note"}
           </Button>
         </div>
       </div>
