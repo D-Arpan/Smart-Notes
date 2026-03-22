@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Smart Notes",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.png",
   },
   description: "A calm Next.js notes frontend connected to the existing backend API."
 };
