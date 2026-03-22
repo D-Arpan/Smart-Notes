@@ -6,15 +6,15 @@ interface ApiEnvelope<T> {
   message?: string;
 }
 
-const rawApiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+const rawApiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 if (!rawApiBaseUrl) {
-  throw new Error("Missing NEXT_PUBLIC_API_BASE_URL in the frontend environment.");
+  throw new Error("Missing NEXT_PUBLIC_API_URL in the frontend environment.");
 }
 
 const API_BASE_URL = rawApiBaseUrl.replace(/\/$/, "");
 
-const NOTES_ENDPOINT = `${API_BASE_URL}/notes`;
+export const NOTES_ENDPOINT = `${API_BASE_URL}/notes`;
 
 async function parseResponse<T>(response: Response): Promise<ApiEnvelope<T>> {
   const payload = (await response.json().catch(() => null)) as ApiEnvelope<T> | null;
