@@ -86,6 +86,27 @@ export function NotesHeroSection({
             </div>
           </div>
         </div>
+
+        <div className="hero-band">
+          <div className="hero-band__item">
+            <span className="hero-band__label">For everyday capture</span>
+            <p className="hero-band__copy">
+              Keep quick reminders, ideas, and longer notes in one private space.
+            </p>
+          </div>
+          <div className="hero-band__item">
+            <span className="hero-band__label">Designed for reading</span>
+            <p className="hero-band__copy">
+              Open notes in a larger modal when you want to focus on the full content.
+            </p>
+          </div>
+          <div className="hero-band__item">
+            <span className="hero-band__label">Built for continuity</span>
+            <p className="hero-band__copy">
+              Register once, sign in later, and pick up your notes where you left off.
+            </p>
+          </div>
+        </div>
       </Card>
     </section>
   );

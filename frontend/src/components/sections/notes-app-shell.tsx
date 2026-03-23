@@ -177,7 +177,7 @@ export function NotesAppShell() {
           />
         </div>
       ) : (
-        <>
+        <div className="landing-shell">
           <NotesHeroSection
             onLogin={() => openAuth("login")}
             onRegister={() => openAuth("register")}
@@ -193,7 +193,7 @@ export function NotesAppShell() {
             open={authOpen}
             values={authValues}
           />
-        </>
+        </div>
       )}
 
       <LogoutModal
