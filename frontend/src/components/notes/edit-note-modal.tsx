@@ -29,7 +29,7 @@ export function EditNoteModal({
       open={Boolean(note)}
       title={note ? `Edit "${note.title}"` : "Edit note"}
     >
-      <div className="composer-card composer-card--modal">
+      <div className="composer-card composer-card--modal composer-card--plain">
         <Input
           id="edit-note-title"
           label="Title"
