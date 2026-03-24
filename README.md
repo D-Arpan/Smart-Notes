@@ -1,29 +1,68 @@
 # Smart Notes
 
-Smart Notes is a full-stack notes application with private user workspaces. Users can register, log in, and manage notes that are scoped to their own account. The frontend is built with Next.js and TypeScript, and the backend uses Express, MongoDB, Mongoose, and JWT authentication.
+Smart Notes is a full-stack notes application built around private, account-scoped workspaces. Users can register, authenticate with JWT-based sessions, and manage personal notes through a modern Next.js interface backed by an Express and MongoDB API.
 
-## Features
+The project is structured as a two-application repository:
+- `frontend`: Next.js 14, React 18, TypeScript
+- `backend`: Express 5, MongoDB, Mongoose, JWT authentication
 
+## Overview
+
+Smart Notes is designed as a personal note management experience rather than a shared playground. Each authenticated user works inside an isolated notes space, with note access protected through bearer-token authentication.
+
+The frontend emphasizes a polished application experience:
+- responsive dark UI
+- modal-based create, edit, and read flows
+- toast-based system feedback
+- searchable notes collection
+- client-side sorting for latest-first and oldest-first views
+- markdown-style note rendering for headings, bold text, and lists
+
+## Core Features
+
+### Authentication and Access Control
 - User registration and login
-- JWT-based protected note routes
-- Private notes per user account
-- Create, read, edit, and delete notes
+- JWT-protected note operations
+- Private note ownership per account
+- Persistent frontend session handling
+
+### Notes Experience
+- Create, view, edit, and delete notes
 - Search notes by title and content
-- Latest-first and oldest-first sorting
-- Scrollable full-note reader modal
-- In-app modals and toast messages instead of browser alerts
-- Responsive dark UI for desktop and mobile
+- Sort notes by latest first or oldest first
+- Large reading modal for longer note content
+- Markdown-style rendering support for:
+  - `#`, `##`, `###` headings
+  - `**bold**` text
+  - bullet lists such as `- item` or `* item`
+  - numbered lists such as `1. item`
+
+### Frontend UX
+- Responsive layout for desktop, tablet, and mobile
+- Modern dark theme
+- Animated app loader during startup
+- Modal confirmations instead of browser alerts
+- Toast notifications for success, error, and informational states
 
 ## Tech Stack
 
-- Frontend: Next.js 14, React 18, TypeScript
-- Backend: Express 5, Mongoose, JWT, bcrypt
-- Database: MongoDB
+### Frontend
+- Next.js 14
+- React 18
+- TypeScript
+- Custom component-based UI architecture
 
-## Project Structure
+### Backend
+- Express 5
+- MongoDB
+- Mongoose
+- JSON Web Token (`jsonwebtoken`)
+- bcrypt
+
+## Repository Structure
 
 ```text
-smart-notes/
+backend-yt/
 ├── backend/
 │   ├── src/
 │   │   ├── controllers/
@@ -32,6 +71,7 @@ smart-notes/
 │   │   ├── models/
 │   │   ├── routes/
 │   │   ├── services/
+│   │   ├── app.js
 │   │   └── server.js
 │   ├── .env
 │   └── package.json
@@ -39,6 +79,10 @@ smart-notes/
 │   ├── src/
 │   │   ├── app/
 │   │   ├── components/
+│   │   │   ├── auth/
+│   │   │   ├── notes/
+│   │   │   ├── sections/
+│   │   │   └── ui/
 │   │   ├── lib/
 │   │   └── types/
 │   ├── .env
@@ -46,14 +90,9 @@ smart-notes/
 └── README.md
 ```
 
-## Prerequisites
+## Environment Configuration
 
-- Node.js 18+
-- MongoDB running locally or a MongoDB connection string
-
-## Environment Variables
-
-Create the following environment files.
+Create the following environment files before starting the application.
 
 ### `backend/.env`
 
@@ -69,7 +108,15 @@ JWT_SECRET=your_jwt_secret
 NEXT_PUBLIC_API_URL=http://localhost:5000
 ```
 
+## Prerequisites
+
+- Node.js 18 or newer
+- npm
+- MongoDB running locally, or a valid MongoDB connection string
+
 ## Installation
+
+Install dependencies for both applications separately.
 
 ### Backend
 
@@ -87,13 +134,13 @@ npm install
 
 ## Running the Project
 
-Run the backend and frontend in two separate terminals.
+Run the backend and frontend in separate terminals.
 
 ### 1. Start MongoDB
 
-Make sure MongoDB is running before starting the backend.
+Ensure MongoDB is available before launching the backend server.
 
-### 2. Start the backend
+### 2. Start the backend API
 
 ```bash
 cd backend
@@ -106,7 +153,7 @@ The backend runs on:
 http://localhost:5000
 ```
 
-### 3. Start the frontend
+### 3. Start the frontend application
 
 ```bash
 cd frontend
@@ -124,25 +171,24 @@ If PowerShell blocks `npm`, use `npm.cmd` instead.
 ## Available Scripts
 
 ### Backend
-
-- `npm run dev` starts the Express server with nodemon
+- `npm run dev`: Starts the Express API with nodemon
 
 ### Frontend
+- `npm run dev`: Starts the Next.js development server
+- `npm run build`: Builds the production application
+- `npm run start`: Starts the production build
+- `npm run lint`: Runs Next.js ESLint checks
 
-- `npm run dev` starts the Next.js development server
-- `npm run build` creates a production build
-- `npm run start` starts the production server
-- `npm run lint` runs Next.js linting
+## API Surface
 
-## API Overview
+### Health / Warm-Up
+- `GET /ping`
 
-### Auth Routes
-
+### Authentication
 - `POST /auth/register`
 - `POST /auth/login`
 
-### Notes Routes
-
+### Notes
 - `GET /notes`
 - `POST /notes`
 - `GET /notes/:id`
@@ -151,18 +197,34 @@ If PowerShell blocks `npm`, use `npm.cmd` instead.
 
 All `/notes` routes require a bearer token in the `Authorization` header.
 
-## Frontend UX Highlights
+## Frontend Architecture
 
-- Landing page with register and login flow
-- Auth modal with password visibility toggle
-- Dashboard with note stats and sort toggle
-- Dedicated create-note modal
-- Read-note modal for longer note content
-- Edit and delete confirmation modals
-- Toast-based success, error, and info feedback
+The frontend is organized around reusable UI primitives and higher-level feature sections.
+
+- `src/components/ui`: base UI building blocks such as buttons, inputs, modals, toasts, and loader components
+- `src/components/sections`: page-level layout sections such as the landing experience and authenticated app shell
+- `src/components/notes`: note-specific UI such as cards, editor modals, reader modal, and markdown rendering
+- `src/lib`: API helpers and shared utilities
+- `src/types`: shared TypeScript types
+
+This separation keeps the interface modular, easier to maintain, and straightforward to extend.
+
+## Product Experience Highlights
+
+- Landing experience for sign in and registration
+- Authenticated dashboard with private note access
+- Modal-based note creation and editing for better writing space
+- Full-size note reader for longer content
+- Search and sorting controls for note browsing
+- Mobile-responsive layouts and controls
+- Startup loader with backend warm-up ping
 
 ## Notes
 
-- Notes are private to the authenticated user.
-- The frontend expects the backend API base URL from `NEXT_PUBLIC_API_URL`.
-- The application is designed to work with the current backend route structure in this repository.
+- The frontend uses `NEXT_PUBLIC_API_URL` for all API communication.
+- The repository is intended to be run as two local services during development.
+- Notes are stored as plain text and rendered on the frontend with lightweight markdown-style formatting.
+
+## License
+
+This project is currently provided without a dedicated license file. Add one before public distribution if licensing terms need to be explicit.
