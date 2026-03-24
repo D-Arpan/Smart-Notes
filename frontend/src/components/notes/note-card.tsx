@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { NoteMarkdown } from "@/components/notes/note-markdown";
 import type { Note } from "@/types/note";
 
 interface NoteCardProps {
@@ -45,7 +46,7 @@ export function NoteCard({ note, onView, onEdit, onDelete }: NoteCardProps) {
 
       <div className="note-card__preview">
         <div className="note-card__preview-shell">
-          <p className="note-preview">{note.description}</p>
+          <NoteMarkdown className="note-preview" content={note.description} />
         </div>
       </div>
 

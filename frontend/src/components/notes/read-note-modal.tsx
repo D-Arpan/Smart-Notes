@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { NoteMarkdown } from "@/components/notes/note-markdown";
 import type { Note } from "@/types/note";
 
 interface ReadNoteModalProps {
@@ -27,7 +28,9 @@ export function ReadNoteModal({
         <div className="reader-modal">
           <div className="reader-modal__content">
             <div className="reader-modal__heading">Note content</div>
-            <div className="reader-modal__body">{note.description}</div>
+            <div className="reader-modal__body">
+              <NoteMarkdown content={note.description} />
+            </div>
           </div>
 
           <div className="reader-modal__actions">

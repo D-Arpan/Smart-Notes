@@ -42,9 +42,14 @@ export function CreateNoteModal({
           id="create-note-description"
           label="Description"
           onChange={(event) => onChange("description", event.target.value)}
-          placeholder="Write the note details here."
+          placeholder={"Write the note details here..."}
           value={values.description}
         />
+
+        <p className="helper-text">
+          Supports style formatting such as #headings, ##subheadings,
+          -bullet points, *bullet points, numbered lists, and **bold text**.
+        </p>
 
         <div className="modal-actions">
           <Button onClick={onClose} type="button" variant="ghost">

@@ -399,19 +399,6 @@ export function NotesWorkspaceSection({
 
           {filteredNotes.length > 0 ? (
             <div className="workspace-collection">
-              <div className="workspace-collection__header">
-                <div>
-                  <h3 className="workspace-collection__title">
-                    {trimmedQuery ? "Search results" : "Saved notes"}
-                  </h3>
-                  <p className="workspace-collection__copy">
-                    {trimmedQuery
-                      ? `Showing notes that match "${trimmedSearchValue}".`
-                      : "Browse your notes below."}
-                  </p>
-                </div>
-              </div>
-
               <NotesGrid
                 notes={filteredNotes}
                 onDelete={openDeleteModal}

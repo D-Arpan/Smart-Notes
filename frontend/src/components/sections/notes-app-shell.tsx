@@ -5,6 +5,7 @@ import { AuthModal } from "@/components/auth/auth-modal";
 import { LogoutModal } from "@/components/auth/logout-modal";
 import { NotesHeroSection } from "@/components/sections/notes-hero-section";
 import { NotesWorkspaceSection } from "@/components/sections/notes-workspace-section";
+import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
 import { ToastStack } from "@/components/ui/toast-stack";
 import { loginUser, registerUser } from "@/lib/api";
@@ -20,12 +21,14 @@ const EMPTY_AUTH_VALUES: AuthFormValues = {
 };
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const PING_URL = API_BASE_URL ? `${API_BASE_URL.replace(/\/$/, "")}/ping` : null;
 
 export function NotesAppShell() {
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [authValues, setAuthValues] = useState<AuthFormValues>(EMPTY_AUTH_VALUES);
   const [authOpen, setAuthOpen] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
+  const [bootComplete, setBootComplete] = useState(false);
   const [session, setSession] = useState<AuthSession | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
@@ -34,6 +37,9 @@ export function NotesAppShell() {
 
   useEffect(() => {
     const rawSession = window.localStorage.getItem(SESSION_STORAGE_KEY);
+    const bootTimer = window.setTimeout(() => {
+      setBootComplete(true);
+    }, 5000);
 
     if (rawSession) {
       try {
@@ -44,14 +50,26 @@ export function NotesAppShell() {
     }
 
     setHydrated(true);
+
+    return () => {
+      window.clearTimeout(bootTimer);
+    };
   }, []);
 
   useEffect(() => {
-    if (!API_BASE_URL) {
+    if (!PING_URL) {
       return;
     }
 
-    void fetch(API_BASE_URL).catch(() => undefined);
+    void fetch(PING_URL).catch(() => undefined);
+
+    const intervalId = window.setInterval(() => {
+      void fetch(PING_URL).catch(() => undefined);
+    }, 5 * 60 * 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
   }, []);
 
   function dismissToast(toastId: string) {
@@ -151,8 +169,8 @@ export function NotesAppShell() {
     }
   }
 
-  if (!hydrated) {
-    return null;
+  if (!hydrated || !bootComplete) {
+    return <AppLoader />;
   }
 
   return (
@@ -171,7 +189,7 @@ export function NotesAppShell() {
             </div>
 
             <Button
-              className="session-topbar__logout"
+              className="session-topbar__logout session-topbar__logout--desktop"
               onClick={() => setLogoutOpen(true)}
               type="button"
               variant="danger"
@@ -185,6 +203,17 @@ export function NotesAppShell() {
             token={session.token}
             userEmail={session.user.email}
           />
+
+          <div className="session-mobile-actions">
+            <Button
+              className="session-topbar__logout session-topbar__logout--mobile"
+              onClick={() => setLogoutOpen(true)}
+              type="button"
+              variant="danger"
+            >
+              Logout
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="landing-shell">

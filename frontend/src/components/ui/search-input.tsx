@@ -30,7 +30,15 @@ export function SearchInput({
             />
           </svg>
         </span>
-        <input className="search-field__input" id={id} type="search" {...props} />
+        <input
+          autoComplete="off"
+          autoCorrect="off"
+          className="search-field__input"
+          id={id}
+          spellCheck={false}
+          type="search"
+          {...props}
+        />
       </div>
     </label>
   );

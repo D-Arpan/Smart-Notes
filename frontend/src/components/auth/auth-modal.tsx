@@ -42,7 +42,13 @@ export function AuthModal({
       open={open}
       title={isLogin ? "Welcome back" : "Create your account"}
     >
-      <div className="auth-modal">
+      <form
+        className="auth-modal"
+        onSubmit={(event) => {
+          event.preventDefault();
+          onSubmit();
+        }}
+      >
         <div className="auth-intro">
           <span className="auth-intro__eyebrow">{isLogin ? "Sign in" : "Register"}</span>
           <p className="auth-intro__copy">
@@ -71,11 +77,13 @@ export function AuthModal({
 
         <div className="auth-fields">
           <Input
-            autoComplete="email"
+            autoComplete="off"
+            autoCorrect="off"
             id="auth-email"
             label="Email"
             onChange={(event) => onChange("email", event.target.value)}
             placeholder="you@example.com"
+            spellCheck={false}
             value={values.email}
           />
 
@@ -83,11 +91,13 @@ export function AuthModal({
             <span className="ui-field__label">Password</span>
             <div className="password-field">
               <input
-                autoComplete={isLogin ? "current-password" : "new-password"}
+                autoComplete="off"
+                autoCorrect="off"
                 className="password-field__input"
                 id="auth-password"
                 onChange={(event) => onChange("password", event.target.value)}
                 placeholder="Enter your password"
+                spellCheck={false}
                 type={showPassword ? "text" : "password"}
                 value={values.password}
               />
@@ -160,7 +170,7 @@ export function AuthModal({
         </div>
 
         <div className="auth-actions">
-          <Button fullWidth loading={loading} onClick={onSubmit} type="button">
+          <Button fullWidth loading={loading} type="submit">
             {loading
               ? isLogin
                 ? "Signing in"
@@ -176,7 +186,7 @@ export function AuthModal({
             ? "Use your account to access notes created only by you."
             : "After registration, your notes stay scoped to your account."}
         </p>
-      </div>
+      </form>
     </Modal>
   );
 }
