@@ -78,8 +78,10 @@ export function AuthModal({
         <div className="auth-fields">
           <Input
             autoComplete="off"
+            autoCapitalize="none"
             autoCorrect="off"
             id="auth-email"
+            inputMode="email"
             label="Email"
             onChange={(event) => onChange("email", event.target.value)}
             placeholder="you@example.com"

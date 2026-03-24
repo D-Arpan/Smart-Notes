@@ -113,7 +113,10 @@ export function NotesAppShell() {
   }
 
   function updateAuthField(field: keyof AuthFormValues, value: string) {
-    setAuthValues((current) => ({ ...current, [field]: value }));
+    setAuthValues((current) => ({
+      ...current,
+      [field]: field === "email" ? value.toLowerCase() : value
+    }));
   }
 
   async function handleAuthSubmit() {
