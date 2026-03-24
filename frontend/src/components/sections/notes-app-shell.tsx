@@ -19,6 +19,8 @@ const EMPTY_AUTH_VALUES: AuthFormValues = {
   password: ""
 };
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export function NotesAppShell() {
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [authValues, setAuthValues] = useState<AuthFormValues>(EMPTY_AUTH_VALUES);
@@ -42,6 +44,14 @@ export function NotesAppShell() {
     }
 
     setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!API_BASE_URL) {
+      return;
+    }
+
+    void fetch(API_BASE_URL).catch(() => undefined);
   }, []);
 
   function dismissToast(toastId: string) {
