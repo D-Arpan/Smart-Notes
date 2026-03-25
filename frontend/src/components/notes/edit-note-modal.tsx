@@ -24,7 +24,7 @@ export function EditNoteModal({
   return (
     <Modal
       className="ui-modal--editor"
-      description="Make changes inside the popup card and save them back to the existing backend."
+      description="Update your note and save the latest version."
       onClose={onClose}
       open={Boolean(note)}
       title={note ? `Edit "${note.title}"` : "Edit note"}
@@ -47,8 +47,8 @@ export function EditNoteModal({
         />
 
         <p className="helper-text">
-          Supports style formatting such as #headings, ##subheadings,
-          -bullet points, *bullet points, numbered lists, and **bold text**.
+          You can style notes with # headings, bullet points, numbered lists, and
+          **bold text**.
         </p>
 
         <div className="modal-actions">

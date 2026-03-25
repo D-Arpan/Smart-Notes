@@ -35,8 +35,8 @@ export function AuthModal({
       className="ui-modal--auth"
       description={
         isLogin
-          ? "Sign in to continue to your notes workspace."
-          : "Create your Smart Notes account to start saving notes."
+          ? "Sign in to open your notes."
+          : "Create your Smart Notes account in seconds."
       }
       onClose={onClose}
       open={open}
@@ -53,8 +53,8 @@ export function AuthModal({
           <span className="auth-intro__eyebrow">{isLogin ? "Sign in" : "Register"}</span>
           <p className="auth-intro__copy">
             {isLogin
-              ? "Access your personal notes, recent updates, and full reading workspace."
-              : "Start with a simple account and keep your notes connected to you."}
+              ? "Pick up your notes, edits, and ideas right where you left off."
+              : "Your notes stay personal, organized, and ready whenever you return."}
           </p>
         </div>
 
@@ -185,8 +185,8 @@ export function AuthModal({
 
         <p className="auth-footnote">
           {isLogin
-            ? "Use your account to access notes created only by you."
-            : "After registration, your notes stay scoped to your account."}
+            ? "Only you can access your saved notes."
+            : "After sign up, your notes are saved to your account."}
         </p>
       </form>
     </Modal>

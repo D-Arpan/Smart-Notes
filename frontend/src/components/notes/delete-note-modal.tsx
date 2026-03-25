@@ -17,7 +17,7 @@ export function DeleteNoteModal({
 }: DeleteNoteModalProps) {
   return (
     <Modal
-      description="This replaces the browser confirm dialog with a calmer in-app action card."
+      description="Please confirm before this note is removed."
       onClose={onClose}
       open={Boolean(note)}
       title="Delete note"

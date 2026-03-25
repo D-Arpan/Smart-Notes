@@ -7,6 +7,8 @@ import { NotesHeroSection } from "@/components/sections/notes-hero-section";
 import { NotesWorkspaceSection } from "@/components/sections/notes-workspace-section";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
+// import { ServerWakeLoader } from "@/components/ui/server-wake-loader";
+import { StartupNoticeModal } from "@/components/ui/startup-notice-modal";
 import { ToastStack } from "@/components/ui/toast-stack";
 import { loginUser, registerUser } from "@/lib/api";
 import { getErrorMessage, isAuthErrorMessage } from "@/lib/utils";
@@ -24,11 +26,13 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const PING_URL = API_BASE_URL ? `${API_BASE_URL.replace(/\/$/, "")}/ping` : null;
 
 export function NotesAppShell() {
+  const [bootPhase, setBootPhase] = useState<"notice" | "workspace" | "ready">(
+    "notice"
+  );
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [authValues, setAuthValues] = useState<AuthFormValues>(EMPTY_AUTH_VALUES);
   const [authOpen, setAuthOpen] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
-  const [bootComplete, setBootComplete] = useState(false);
   const [session, setSession] = useState<AuthSession | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
@@ -37,9 +41,6 @@ export function NotesAppShell() {
 
   useEffect(() => {
     const rawSession = window.localStorage.getItem(SESSION_STORAGE_KEY);
-    const bootTimer = window.setTimeout(() => {
-      setBootComplete(true);
-    }, 5000);
 
     if (rawSession) {
       try {
@@ -50,11 +51,42 @@ export function NotesAppShell() {
     }
 
     setHydrated(true);
+  }, []);
+
+  /*
+    Server wake loader is intentionally disabled for now.
+    To re-enable later:
+    1) restore ServerWakeLoader import
+    2) add "server" back to bootPhase union
+    3) restore this timer and the server render branch below
+  useEffect(() => {
+    if (bootPhase !== "server") {
+      return;
+    }
+
+    const timerId = window.setTimeout(() => {
+      setBootPhase("workspace");
+    }, 7000);
 
     return () => {
-      window.clearTimeout(bootTimer);
+      window.clearTimeout(timerId);
     };
-  }, []);
+  }, [bootPhase]);
+  */
+
+  useEffect(() => {
+    if (bootPhase !== "workspace") {
+      return;
+    }
+
+    const timerId = window.setTimeout(() => {
+      setBootPhase("ready");
+    }, 5000);
+
+    return () => {
+      window.clearTimeout(timerId);
+    };
+  }, [bootPhase]);
 
   useEffect(() => {
     if (!PING_URL) {
@@ -172,7 +204,19 @@ export function NotesAppShell() {
     }
   }
 
-  if (!hydrated || !bootComplete) {
+  function beginStartupSequence() {
+    setBootPhase("workspace");
+  }
+
+  if (bootPhase === "notice") {
+    return <StartupNoticeModal onAcknowledge={beginStartupSequence} />;
+  }
+
+  // if (bootPhase === "server") {
+  //   return <ServerWakeLoader />;
+  // }
+
+  if (!hydrated || bootPhase === "workspace") {
     return <AppLoader />;
   }
 

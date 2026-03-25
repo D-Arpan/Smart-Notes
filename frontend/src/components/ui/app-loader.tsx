@@ -5,19 +5,19 @@ import { useEffect, useState } from "react";
 const LOADER_MESSAGES = [
   {
     title: "Preparing your workspace",
-    text: "Waking the backend and restoring your notes experience."
+    text: "Setting up your notes space."
   },
   {
-    title: "Syncing your notes flow",
-    text: "Getting the interface ready for reading, writing, and editing."
+    title: "Getting things in place",
+    text: "Making sure your writing tools are ready."
   },
   {
-    title: "Setting things in place",
-    text: "Bringing your private notes space online."
+    title: "Almost there",
+    text: "Bringing your notes and actions together."
   },
   {
-    title: "Almost ready",
-    text: "Finishing the startup sequence for Smart Notes."
+    title: "Ready in a moment",
+    text: "Finishing the final touches for Smart Notes."
   }
 ] as const;
 

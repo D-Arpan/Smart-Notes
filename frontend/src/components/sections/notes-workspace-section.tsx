@@ -269,10 +269,10 @@ export function NotesWorkspaceSection({
             <div className="workspace-shell__header">
               <div className="workspace-shell__copy">
                 <span className="workspace-eyebrow">Dashboard</span>
-                <h2 className="workspace-title">Your Smart Notes dashboard</h2>
+                <h2 className="workspace-title">Your notes at a glance</h2>
                 <p className="workspace-subtitle">
-                  A calm overview of your personal notes space. Your newest notes stay at
-                  the top so recent work is always easier to reach.
+                  See what matters first. Keep recent notes close, switch sort order when
+                  needed, and stay in control of your writing space.
                 </p>
               </div>
 
@@ -280,8 +280,8 @@ export function NotesWorkspaceSection({
                 <div className="status-pill">
                   <span className="status-pill__dot" aria-hidden="true" />
                   {loading
-                    ? "Loading notes..."
-                    : `${notes.length} note${notes.length === 1 ? "" : "s"} in your account`}
+                    ? "Loading your notes..."
+                    : `${notes.length} note${notes.length === 1 ? "" : "s"} saved`}
                 </div>
 
                 <div className="sort-toggle" aria-label="Sort notes" role="group">
@@ -307,7 +307,7 @@ export function NotesWorkspaceSection({
               <div className="workspace-stat">
                 <span className="workspace-stat__label">Total notes</span>
                 <strong className="workspace-stat__value">{notes.length}</strong>
-                <p className="workspace-stat__meta">Everything saved to your account</p>
+                <p className="workspace-stat__meta">All notes in your workspace</p>
               </div>
 
               <div className="workspace-stat">
@@ -315,7 +315,7 @@ export function NotesWorkspaceSection({
                 <strong className="workspace-stat__value">{filteredNotes.length}</strong>
                 <p className="workspace-stat__meta">
                   {trimmedQuery
-                    ? "Results after filtering your notes"
+                    ? "Notes matching your search"
                     : sortOrder === "latest"
                       ? "Latest notes first"
                       : "Oldest notes first"}
@@ -324,7 +324,7 @@ export function NotesWorkspaceSection({
 
               <div className="workspace-stat workspace-stat--accent">
                 <span className="workspace-stat__label">Workspace owner</span>
-                <strong className="workspace-stat__value">Private</strong>
+                <strong className="workspace-stat__value">Personal</strong>
                 <p className="workspace-stat__meta">{userEmail}</p>
               </div>
             </div>
@@ -335,14 +335,14 @@ export function NotesWorkspaceSection({
               <span className="workspace-eyebrow">Notes tools</span>
               <h3 className="workspace-controls__title">Find or create a note</h3>
               <p className="workspace-controls__subtitle">
-                Search through your saved notes or open the full-size editor for a new one.
+                Search your notes instantly or open the large editor to write a new one.
               </p>
             </div>
 
             <div className="workspace-toolbar workspace-toolbar--controls">
               <SearchInput
                 onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder="Search by title or note content"
+                placeholder="Search by title or content"
                 value={searchQuery}
               />
 
@@ -383,7 +383,7 @@ export function NotesWorkspaceSection({
 
           {loading && notes.length === 0 ? (
             <EmptyState
-              copy="The frontend is reaching out to the existing notes API."
+              copy="Please wait while we load your notes."
               title="Loading your workspace"
             />
           ) : null}

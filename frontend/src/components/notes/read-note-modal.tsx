@@ -19,7 +19,7 @@ export function ReadNoteModal({
   return (
     <Modal
       className="ui-modal--reader"
-      description="Full note view with a larger reading area for long content."
+      description="Read the full note in a larger, easier view."
       onClose={onClose}
       open={Boolean(note)}
       title={note?.title ?? "Read note"}

@@ -17,13 +17,13 @@ export function NotesHeroSection({
       <Card className="hero-card">
         <div className="hero-layout">
           <div className="hero-content">
-            <div className="hero-kicker">Smart notes</div>
+            <div className="hero-kicker">Smart Notes</div>
             <h1 className="hero-title">
-              A calmer notes space for your ideas, plans, and daily writing.
+              Write clearly, stay organized, and keep every note in one calm place.
             </h1>
             <p className="hero-copy">
-              Create an account or sign back in to continue with a private notes
-              workspace designed to feel clear, focused, and easy to use.
+              Create your account once, then come back anytime to continue writing
+              right where you left off.
             </p>
 
             <div className="hero-actions">
@@ -38,11 +38,11 @@ export function NotesHeroSection({
             <div className="hero-metrics">
               <div className="hero-metric">
                 <span className="hero-metric__value">Private</span>
-                <span className="hero-metric__label">Notes stay tied to your account</span>
+                <span className="hero-metric__label">Your notes stay in your account</span>
               </div>
               <div className="hero-metric">
                 <span className="hero-metric__value">Focused</span>
-                <span className="hero-metric__label">Read, search, and edit without clutter</span>
+                <span className="hero-metric__label">Simple tools for quick writing and reading</span>
               </div>
             </div>
           </div>
@@ -56,31 +56,31 @@ export function NotesHeroSection({
 
               <div className="hero-preview__panel">
                 <div className="hero-preview__row">
-                  <span className="hero-preview__row-label">Account access</span>
-                  <span className="hero-preview__row-value">Register or login</span>
+                  <span className="hero-preview__row-label">Start here</span>
+                  <span className="hero-preview__row-value">Create account or sign in</span>
                 </div>
                 <div className="hero-preview__row">
-                  <span className="hero-preview__row-label">Notes experience</span>
-                  <span className="hero-preview__row-value">Create, view, edit, delete</span>
+                  <span className="hero-preview__row-label">Daily flow</span>
+                  <span className="hero-preview__row-value">Create, update, and manage notes</span>
                 </div>
                 <div className="hero-preview__row">
-                  <span className="hero-preview__row-label">Reading flow</span>
-                  <span className="hero-preview__row-value">Large modal for longer notes</span>
+                  <span className="hero-preview__row-label">Long notes</span>
+                  <span className="hero-preview__row-value">Open in a full reading view</span>
                 </div>
               </div>
 
               <div className="hero-feature-list">
                 <div className="hero-feature">
                   <strong>Private by account</strong>
-                  <p>Each user sees only the notes created under their own account.</p>
+                  <p>Only you can see and manage the notes linked to your sign-in.</p>
                 </div>
                 <div className="hero-feature">
-                  <strong>Secure access</strong>
-                  <p>Registration, login, and token-based access protect your workspace.</p>
+                  <strong>Secure sign-in</strong>
+                  <p>Register once and come back to the same notes any time.</p>
                 </div>
                 <div className="hero-feature">
-                  <strong>Focused workflow</strong>
-                  <p>Create, search, read, edit, and delete notes from one clean interface.</p>
+                  <strong>Clean workflow</strong>
+                  <p>Everything you need to write, search, read, and edit is in one place.</p>
                 </div>
               </div>
             </div>
@@ -91,19 +91,19 @@ export function NotesHeroSection({
           <div className="hero-band__item">
             <span className="hero-band__label">For everyday capture</span>
             <p className="hero-band__copy">
-              Keep quick reminders, ideas, and longer notes in one private space.
+              Save reminders, class notes, plans, and drafts in a single personal workspace.
             </p>
           </div>
           <div className="hero-band__item">
             <span className="hero-band__label">Designed for reading</span>
             <p className="hero-band__copy">
-              Open notes in a larger modal when you want to focus on the full content.
+              Open any note in a larger reader when you want a distraction-free view.
             </p>
           </div>
           <div className="hero-band__item">
             <span className="hero-band__label">Built for continuity</span>
             <p className="hero-band__copy">
-              Register once, sign in later, and pick up your notes where you left off.
+              Sign in and continue from your latest notes without losing your flow.
             </p>
           </div>
         </div>

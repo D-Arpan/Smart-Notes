@@ -24,7 +24,7 @@ export function CreateNoteModal({
   return (
     <Modal
       className="ui-modal--editor"
-      description="Use the full-size editor to write a title and a longer note without feeling cramped."
+      description="Use this larger editor to write comfortably."
       onClose={onClose}
       open={open}
       title="Create new note"
@@ -47,8 +47,8 @@ export function CreateNoteModal({
         />
 
         <p className="helper-text">
-          Supports style formatting such as #headings, ##subheadings,
-          -bullet points, *bullet points, numbered lists, and **bold text**.
+          You can style notes with # headings, bullet points, numbered lists, and
+          **bold text**.
         </p>
 
         <div className="modal-actions">
