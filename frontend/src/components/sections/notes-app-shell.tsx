@@ -7,7 +7,6 @@ import { NotesHeroSection } from "@/components/sections/notes-hero-section";
 import { NotesWorkspaceSection } from "@/components/sections/notes-workspace-section";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
-// import { ServerWakeLoader } from "@/components/ui/server-wake-loader";
 import { StartupNoticeModal } from "@/components/ui/startup-notice-modal";
 import { ToastStack } from "@/components/ui/toast-stack";
 import { loginUser, registerUser } from "@/lib/api";
@@ -52,27 +51,6 @@ export function NotesAppShell() {
 
     setHydrated(true);
   }, []);
-
-  /*
-    Server wake loader is intentionally disabled for now.
-    To re-enable later:
-    1) restore ServerWakeLoader import
-    2) add "server" back to bootPhase union
-    3) restore this timer and the server render branch below
-  useEffect(() => {
-    if (bootPhase !== "server") {
-      return;
-    }
-
-    const timerId = window.setTimeout(() => {
-      setBootPhase("workspace");
-    }, 7000);
-
-    return () => {
-      window.clearTimeout(timerId);
-    };
-  }, [bootPhase]);
-  */
 
   useEffect(() => {
     if (bootPhase !== "workspace") {
@@ -211,10 +189,6 @@ export function NotesAppShell() {
   if (bootPhase === "notice") {
     return <StartupNoticeModal onAcknowledge={beginStartupSequence} />;
   }
-
-  // if (bootPhase === "server") {
-  //   return <ServerWakeLoader />;
-  // }
 
   if (!hydrated || bootPhase === "workspace") {
     return <AppLoader />;

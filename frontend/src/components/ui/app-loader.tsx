@@ -14,10 +14,6 @@ const LOADER_MESSAGES = [
   {
     title: "Almost there",
     text: "Bringing your notes and actions together."
-  },
-  {
-    title: "Ready in a moment",
-    text: "Finishing the final touches for Smart Notes."
   }
 ] as const;
 
@@ -27,7 +23,7 @@ export function AppLoader() {
   useEffect(() => {
     const intervalId = window.setInterval(() => {
       setMessageIndex((current) => (current + 1) % LOADER_MESSAGES.length);
-    }, 1250);
+    }, 5000 / LOADER_MESSAGES.length);
 
     return () => {
       window.clearInterval(intervalId);
