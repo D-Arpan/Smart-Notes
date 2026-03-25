@@ -44,6 +44,7 @@ export function NotesAppShell() {
     if (rawSession) {
       try {
         setSession(JSON.parse(rawSession) as AuthSession);
+        setBootPhase("ready");
       } catch {
         window.localStorage.removeItem(SESSION_STORAGE_KEY);
       }
@@ -186,11 +187,15 @@ export function NotesAppShell() {
     setBootPhase("workspace");
   }
 
+  if (!hydrated) {
+    return null;
+  }
+
   if (bootPhase === "notice") {
     return <StartupNoticeModal onAcknowledge={beginStartupSequence} />;
   }
 
-  if (!hydrated || bootPhase === "workspace") {
+  if (bootPhase === "workspace") {
     return <AppLoader />;
   }
 
